@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stickhero.MainController">
+   <children>
+      <Label alignment="CENTER" layoutX="155.0" layoutY="177.0" style="&#10;" text="Drag components from Library here…" textAlignment="CENTER" textFill="#9f9f9f" wrapText="false">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="750.0" fitWidth="700.0" layoutY="5.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Properbackground.jpg" />
+         </image>
+      </ImageView>
+      <Rectangle fx:id="myoriginalrectangle" arcHeight="5.0" arcWidth="5.0" height="185.0" layoutX="-3.0" layoutY="525.0" stroke="WHITE" strokeType="INSIDE" width="158.0" />
+      <ImageView fx:id="characterImageView" fitHeight="54.0" fitWidth="66.0" layoutX="100.0" layoutY="471.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@MainStickHero-removebg-preview.png" />
+         </image>
+      </ImageView>
+
+      <Rectangle fx:id="myrectangle" arcHeight="5.0" arcWidth="5.0" height="185.0" layoutX="304.0" layoutY="525.0" stroke="RED" strokeType="INSIDE" width="91.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#62acec" height="71.0" layoutX="284.0" layoutY="35.0" stroke="BLACK" strokeType="INSIDE" style="-fx-arc-height: 30; -fx-arc-width: 30;" width="131.0" />
+      <Label fx:id="scoretracker" alignment="CENTER" layoutX="312.0" layoutY="36.0" prefHeight="70.0" prefWidth="72.0" text="0">
+         <font>
+            <Font size="47.0" />
+         </font>
+      </Label>
+      <Label layoutX="250.0" layoutY="150.0" prefHeight="54.0" prefWidth="223.0" text="Hold your fingers on screen  ">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <Label layoutX="261.0" layoutY="177.0" prefHeight="54.0" prefWidth="223.0" text="to stretch out the stick">
+         <font>
+            <Font name="System Bold" size="15.0" />
+         </font>
+      </Label>
+      <ImageView fitHeight="39.0" fitWidth="41.0" layoutX="610.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Cherry.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="cherrytracker" alignment="CENTER" layoutX="647.0" layoutY="11.0" prefHeight="47.0" prefWidth="48.0">
+         <font>
+            <Font size="27.0" />
+         </font>
+      </Label>
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#e40404" height="8.0" layoutX="348.0" layoutY="525.0" stroke="BLACK" strokeType="INSIDE" width="11.0" />
+      <Button layoutX="14.0" layoutY="31.0" mnemonicParsing="false" onAction="#clickingEndButton" prefHeight="39.0" prefWidth="116.0" style="-fx-background-color: #62acec;" text="Go to end screen" />
+      <ImageView fx:id="myCherryView" fitHeight="39.0" fitWidth="41.0" layoutX="155.0" layoutY="525.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Cherry.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="myGhost" fitHeight="63.0" fitWidth="64.0" layoutX="131.0" layoutY="451.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Ghost.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>
