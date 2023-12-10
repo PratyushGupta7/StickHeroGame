@@ -6,7 +6,7 @@ import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//The Character class implements Singeton Design Pattern
 public class Character  {
     public ImageView getCurrentImageView() {
         return currentImageView;

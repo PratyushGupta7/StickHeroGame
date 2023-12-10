@@ -25,6 +25,9 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -62,23 +65,24 @@ public class WorldController implements Initializable {
 
     private static final int CANVAS_WIDTH = 800;
     private static final int CANVAS_HEIGHT = 400;
-    private static final int CHARACTER_SPEED = 15;
+    private static final int CHARACTER_SPEED = 22;
     private static final int GHOST_SPEED = 12;
-    protected static int characterstartingposition=25;
-    protected static int absolutecharacterstartingposition=0;
+    protected static int characterstartingposition = 25;
+    protected static int absolutecharacterstartingposition = 0;
     private double distanceBetweenPillars;
-    private double ghostDistance=-200;
+    private double ghostDistance = -200;
 
-    protected static double pillarstartingposition=180.9;
+    protected static double pillarstartingposition = 180.9;
     private boolean cherrycollected;
-    private  boolean ghostmet;
+    private boolean ghostmet;
+    private boolean reachEnd;
     private MediaPlayer mediaPlayer;
     private MediaPlayer ButtonPlayer;
     private MediaPlayer FallingPlayer;
     private MediaPlayer StickfallingPlayer;
     private MediaPlayer RunningPlayer;
     private static final Duration FRAME_DURATION = Duration.millis(16);
-    double characterdistance=0;
+    double characterdistance = 0;
     double totalshifteddistance;
     private boolean isFlipped = false;
 
@@ -90,14 +94,14 @@ public class WorldController implements Initializable {
     protected double characterX;
     private boolean holdingStick = true;
 
-    private double rectangleRate = 5.0;
+    private double rectangleRate = 7.0;
     private Timeline heightIncreaseTimeline;
     private Timeline timeline;
 
     private boolean isSpaceKeyPressed;
     private Rectangle extendingRectangle;
     Rectangle newRectangle = new Rectangle();
-    private boolean needed=false;
+    private boolean needed = false;
 
     @FXML
     private ImageView characterImageView;
@@ -137,6 +141,7 @@ public class WorldController implements Initializable {
     public static Rectangle getmyRectangle() {
         return myrectangle;
     }
+
     public static int getScore() {
         return Integer.valueOf(scoretracker.getText()).intValue();
     }
@@ -148,11 +153,11 @@ public class WorldController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        initializeGameObjects();
+        //
     }
 
     // Method to initialize game objects (added)
-    private void initializeGameObjects() {
+    protected void initializeGameObjects() {
         character = Character.getInstance();
         cherry = RewardFactory.createReward("Cherry");
         obstacle = RewardFactory.createReward("Obstacle");
@@ -165,18 +170,20 @@ public class WorldController implements Initializable {
     void clickingPlayButton(ActionEvent event) throws IOException, ClassNotFoundException, URISyntaxException {
         FXMLLoader fxmlLoader = new FXMLLoader(World.class.getResource("MainScreen.fxml"));
         this.root = fxmlLoader.load();
+        initializeGameObjects();
         characterImageView = (ImageView) this.root.lookup("#characterImageView");
-        scoretracker= (Label) this.root.lookup("#scoretracker");
-        cherrytracker= (Label) this.root.lookup("#cherrytracker");
+        scoretracker = (Label) this.root.lookup("#scoretracker");
+        cherrytracker = (Label) this.root.lookup("#cherrytracker");
         System.out.println("HELLO FROM HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
-        //loadedData = readObject();
+        loadedData = readObject();
+        scoretracker.setText(String.valueOf(loadedData.savedScore));
         //scoretracker.setText(String.valueOf(loadedData.savedScore));
         character.setCurrentImageView(characterImageView);
         myrectangle = (Rectangle) root.lookup("#myrectangle");
         myoriginalrectangle = (Rectangle) root.lookup("#myoriginalrectangle");
         myCherryView = (ImageView) this.root.lookup("#myCherryView");
         obstacle.setCurrentObstacle(myGhost);
-        myGhost= (ImageView) this.root.lookup("#myGhost");
+        myGhost = (ImageView) this.root.lookup("#myGhost");
         cherry.setCurrentCherry(myCherryView);
         currentPillar = myoriginalrectangle;
         nextPillar = myrectangle;
@@ -185,7 +192,7 @@ public class WorldController implements Initializable {
         kickImage = new Image(Objects.requireNonNull(World.class.getResourceAsStream("Kick.png")));
 
         // Create a Media object with the specified MP3 file
-        gamemusic =new Media(World.class.getResource("walking.mp3").toURI().toString());
+        gamemusic = new Media(World.class.getResource("walking.mp3").toURI().toString());
         falling = new Media(World.class.getResource("falling.mp3").toURI().toString());
         stickfall = new Media(World.class.getResource("stickfalling.mp3").toURI().toString());
         walking = new Media(World.class.getResource("running-sounds-6003.mp3").toURI().toString());
@@ -195,7 +202,7 @@ public class WorldController implements Initializable {
         ((Pane) root).getChildren().remove(cherry.getCurrentCherry());
         ((Pane) root).getChildren().remove(myGhost);
         // Use the retrieved value as the starting position for your character
-        characterX = characterstartingposition ;
+        characterX = characterstartingposition;
         newRectangle.setX(147);
         newRectangle.setY(527.5);
         newRectangle.setWidth(5.8);
@@ -204,6 +211,12 @@ public class WorldController implements Initializable {
 
         Scene scene = new Scene(root);
         scene.setRoot(root);
+
+        Result result= JUnitCore.runClasses(WorldControllerTest.class);
+        for (Failure failure : result.getFailures()) {
+            System.out.println(failure.toString());
+        }
+        System.out.println(result.wasSuccessful());
 
         Platform.runLater(() -> {
 
@@ -215,7 +228,6 @@ public class WorldController implements Initializable {
 
             System.out.println("Character X in Screen: " + characterScreenXbefore);
             System.out.println("Character X in Screen: " + characterScreenX);
-
 
 
         });
@@ -256,17 +268,15 @@ public class WorldController implements Initializable {
             String hiScore = String.valueOf(temp.highestScore);
             String nCherries = String.valueOf(temp.numCherries);
             cherrytracker.setText(nCherries);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             System.out.println("LOADING IT FIRST TIME");
             temp = new DataBase();
             String hiScore = String.valueOf(temp.highestScore);
             String nCherries = String.valueOf(temp.numCherries);
             cherrytracker.setText(nCherries);
-            System.out.println(hiScore+'\n'+nCherries);
+            System.out.println(hiScore + '\n' + nCherries);
 
-        }
-        finally {
+        } finally {
             if (out != null) {
                 out = null;
             }
@@ -294,7 +304,7 @@ public class WorldController implements Initializable {
 
     private void stopGrowingRectangle() {
         mediaPlayer.stop();
-        StickfallingPlayer=new MediaPlayer(stickfall);
+        StickfallingPlayer = new MediaPlayer(stickfall);
         StickfallingPlayer.play();
         if (heightIncreaseTimeline != null && !isSpaceKeyPressed) {
             heightIncreaseTimeline.stop();
@@ -325,11 +335,11 @@ public class WorldController implements Initializable {
     }
 
     private void kick() {
-        cherrycollected=false;
-        ghostmet=false;
+        cherrycollected = false;
+        ghostmet = false;
 
-        needed=true;
-        System.out.println("Abs Starting Character:"+character.getCurrentImageView().getX());
+        needed = true;
+        System.out.println("Abs Starting Character:" + character.getCurrentImageView().getX());
         if (character.getCurrentImageView() != null) {
             character.getCurrentImageView().setImage(kickImage);
 
@@ -347,7 +357,6 @@ public class WorldController implements Initializable {
     }
 
 
-
     private void flipCharacter() {
         double currentScale = character.getCurrentImageView().getScaleY();
         double pivotX = character.getCurrentImageView().getBoundsInLocal().getWidth() / 2;
@@ -360,11 +369,11 @@ public class WorldController implements Initializable {
     }
 
     public void playAnimation() {
-        RunningPlayer= new MediaPlayer(walking);
+        RunningPlayer = new MediaPlayer(walking);
         RunningPlayer.play();
         Image[] frames = new Image[5];
         for (int i = 0; i < frames.length; i++) {
-            frames[i]= new Image(Objects.requireNonNull(World.class.getResourceAsStream("Frame" + (i + 1) + ".png")));
+            frames[i] = new Image(Objects.requireNonNull(World.class.getResourceAsStream("Frame" + (i + 1) + ".png")));
         }
 
         timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), e -> {
@@ -373,6 +382,8 @@ public class WorldController implements Initializable {
             try {
                 updateCharacter();
             } catch (IOException | ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
+            } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
         }));
@@ -390,14 +401,37 @@ public class WorldController implements Initializable {
     }
 
 
+    class CharacterMotion implements Runnable {
+
+        @Override
+        public void run() {
+
+            characterX += CHARACTER_SPEED;
+            character.getCurrentImageView().setX(characterX);
+
+        }
+    }
+
+    class GhostMotion implements Runnable {
+
+        @Override
+        public void run() {
+            myGhost.setX(myGhost.getX() - GHOST_SPEED);
+
+        }
+    }
 
 
 
-    private void updateCharacter() throws IOException, ClassNotFoundException {
 
-        characterX += CHARACTER_SPEED;
-        character.getCurrentImageView().setX(characterX);
-        myGhost.setX(myGhost.getX()-GHOST_SPEED);
+    public void updateCharacter() throws IOException, ClassNotFoundException, InterruptedException {
+        CharacterMotion charMoves = new CharacterMotion();
+        GhostMotion ghostMoves = new GhostMotion();
+        Thread t1 = new Thread(charMoves);
+        Thread t2 = new Thread(ghostMoves);
+        t1.start();t2.start();
+        //t1.join();t1.join();
+
         Bounds characterBounds = character.getCurrentImageView().localToScreen(character.getCurrentImageView().getBoundsInLocal());
         Bounds cherryBounds = cherry.getCurrentCherry().localToScreen(cherry.getCurrentCherry().getBoundsInLocal());
         Bounds ghostBounds = myGhost.localToScreen(myGhost.getBoundsInLocal());
@@ -479,6 +513,123 @@ public class WorldController implements Initializable {
             }
         }
     }
+//private void updateCharacter() throws IOException, ClassNotFoundException {
+//        reachEnd=false;
+//    Thread characterThread = new Thread(() -> {
+//        try {
+//            while (!reachEnd && !ghostmet) {
+//                characterX += CHARACTER_SPEED;
+//                character.getCurrentImageView().setX(characterX);
+//
+//                Thread.sleep(10);
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    });
+//    characterThread.start();
+//
+//    Thread ghostThread = new Thread(() -> {
+//        try {
+//            while (!reachEnd && !ghostmet) {
+//                Bounds ghostBounds = myGhost.localToScreen(myGhost.getBoundsInLocal());
+//                myGhost.setX(myGhost.getX() - GHOST_SPEED);
+//                Thread.sleep(10);
+//            }
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//    });
+//    ghostThread.start();
+//
+//    Bounds characterBounds = character.getCurrentImageView().localToScreen(character.getCurrentImageView().getBoundsInLocal());
+//    Bounds cherryBounds = cherry.getCurrentCherry().localToScreen(cherry.getCurrentCherry().getBoundsInLocal());
+//    Bounds ghostBounds = myGhost.localToScreen(myGhost.getBoundsInLocal());
+//
+//    while (characterThread.isAlive() || ghostThread.isAlive()) {
+//        if (characterBounds != null && cherryBounds != null) {
+//            if (characterBounds.getMaxX() > cherryBounds.getMinX() && characterBounds.getMaxY() > cherryBounds.getMinY() && characterBounds.getMinX() < cherryBounds.getMaxX() && characterBounds.getMinY() < cherryBounds.getMaxY()) {
+//                if (((Pane) root).getChildren().contains(cherry.getCurrentCherry()) && !cherrycollected) {
+//                    cherry.getCurrentCherry().setVisible(false);
+//                    String cherryString = cherrytracker.getText();
+//                    int cherryCherry = Integer.parseInt(cherryString);
+//                    String newCherry = String.valueOf(cherryCherry + 1);
+//                    cherrytracker.setText(newCherry);
+//                    cherrycollected = true;
+//                }
+//            }
+//        }
+//
+//        if (characterBounds != null && ghostBounds != null) {
+//            if (characterBounds.getMaxX() > (ghostBounds.getMinX() + 12) && characterBounds.getMaxY() > ghostBounds.getMinY() && characterBounds.getMinX() < ghostBounds.getMaxX() && characterBounds.getMinY() < ghostBounds.getMaxY()) {
+//                if (((Pane) root).getChildren().contains(myGhost) && !ghostmet) {
+//                    //myGhost.setVisible(false);
+//                    ghostmet = true;
+//                    RunningPlayer.stop();
+//                    timeline.stop();
+//                    character.getCurrentImageView().setImage(originalImage);
+//                    characterFall();
+//                    characterThread.interrupt();
+//                    ghostThread.interrupt();
+//                }
+//            }
+//        }
+//
+//        // Check if the character reaches the end of the stick
+//        double stickEndX = characterstartingposition + newRectangle.getHeight();
+//        System.out.println("End of Stick:" + stickEndX);
+//        rectangleBoundsInScreen = nextPillar.localToScreen(nextPillar.getBoundsInLocal());
+//        distanceBetweenPillars = (rectangleBoundsInScreen.getMinX() - characterBoundsInScreen.getMaxX());
+//        double rectX1 = characterstartingposition + distanceBetweenPillars;
+//        double rectX2 = rectX1 + nextPillar.getWidth();
+//        if (characterX >= (rectX1 - 15) && isFlipped) {
+//            executeAction();
+//            characterThread.interrupt();
+//        }
+//
+//        if (characterX >= stickEndX) {
+//            System.out.println("1st End of Rectangle:" + rectX1);
+//            System.out.println("2nd End of Rectangle:" + rectX2);
+//            if (stickEndX < rectX1 || stickEndX > rectX2) {
+//                executeAction();
+//                characterThread.interrupt();
+//                ghostThread.interrupt();
+//            } else {
+//                if (characterX >= (rectX2 - 25)) {
+//                    reachEnd=true;
+//                    if (alternationTracker == 0) {
+//                        alternationTracker = 1;
+//                    } else {
+//                        alternationTracker = 0;
+//                    }
+//                    myGhost.setVisible(false);
+//                    ((Pane) root).getChildren().remove(myGhost);
+//
+//                    character.getCurrentImageView().setImage(originalImage);
+//                    timeline.stop();
+//                    // Make the stick and the starting pillar disappear
+//                    newRectangle.setHeight(1.5); // Set the height back to its initial
+//                    newRectangle.setHeight(1.5); // Set the height back to its initial value
+//                    newRectangle.setWidth(5.8); // Set the width back to its initial value
+//                    newRectangle.setX(147); // Set the X position back to its initial value
+//                    newRectangle.setY(527.5); // Set the Y position back to its initial value
+//                    newRectangle.getTransforms().clear(); // Clear the transforms
+//                    currentPillar.setVisible(false);
+//                    if (((Pane) root).getChildren().contains(cherry.getCurrentCherry())) {
+//                        ((Pane) root).getChildren().remove(cherry.getCurrentCherry());
+//                    }
+//                    String scoreString = scoretracker.getText();
+//                    int currentScore = Integer.parseInt(scoreString);
+//                    String newScore = String.valueOf(currentScore + 1);
+//                    scoretracker.setText(newScore);
+//                    CharacterAnimationTransition(); // Call the transition method here
+//                }
+//            }
+//        }
+//    }
+//}
+
+
     public void executeAction() throws ClassNotFoundException, IOException {
         character.getCurrentImageView().setImage(originalImage);
         timeline.stop();
@@ -500,6 +651,7 @@ public class WorldController implements Initializable {
         RunningPlayer.stop();
         characterFall();
     }
+
 
     private void CharacterAnimationTransition() {
         RunningPlayer.stop();
@@ -566,7 +718,6 @@ public class WorldController implements Initializable {
         // Start the shift transition
         parallelTransition.play();
     }
-
 
     private void characterFall() throws IOException {
         FallingPlayer=new MediaPlayer(falling);

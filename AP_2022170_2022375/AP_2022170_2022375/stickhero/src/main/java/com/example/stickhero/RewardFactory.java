@@ -1,5 +1,6 @@
 package com.example.stickhero;
 
+//Design Pattern Factory is implemented in which the RewardFactory class is the factory class
 public class RewardFactory {
     public static com.example.stickhero.Reward createReward(String type) {
         if (type.equals("Cherry")) {

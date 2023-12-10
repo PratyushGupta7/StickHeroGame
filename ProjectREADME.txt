@@ -52,8 +52,17 @@ Singleton Pattern: Ensures a single instance of Character throughout the game.
 Seamless Transitions:
 Experience smooth transitions as the game seamlessly shifts between platforms, creating an immersive gaming loop.
 
-Junit Tests:
-JUnit Tests: Rigorous testing is conducted with two JUnit tests to ensure the reliability and correctness of key game functionalities.
+JUnit Tests:-
+Test Serialization:
+A JUnit test verifies the perfect serialization and deserialization of the game's data.
+A DataBase object is created with specific values for highest score and cherries.
+The object is written to a file and then read back.
+Assertions ensure that the read object matches the original, confirming proper serialization and deserialization.
+
+Test Initialize Game Objects:
+Another JUnit test ensures the proper initialization of game objects in the WorldController.
+The test checks if the Character, Cherry, and Obstacle objects are not null after initialization.
+This guarantees that the game starts with essential objects in a valid state.
 
 OOP Principles:-
 Encapsulation: Data and functionality are encapsulated within classes and attributes are accesed and modified through appropriate getters and setters, promoting clean and organized code.
@@ -65,7 +74,8 @@ Polymorphism: Different types of rewards and game entities utilize polymorphism 
 Inheritance: Inheritance is employed to create specialized classes, enhancing code reuse and maintaining a structured class hierarchy.
 
 Interfaces: Interfaces are implemented to define common behaviors, promoting code consistency and adaptability.
-
+Buttons:
+Home Page button directs you to main game , where a button is present which lets you save progress and exits the game. (Termination with saved progress). If you lose, the endpage lets you play again, tru reviving (if you have enough cherries xd) or exit the game. from this page it is not necessary to direct user to home page as it would just be an overhead for the user, since the play again button is already present here.
 
 
 Bonus Adventures 🌈
