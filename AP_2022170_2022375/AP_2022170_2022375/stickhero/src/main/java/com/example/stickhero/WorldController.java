@@ -34,10 +34,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class WorldController implements Initializable {
@@ -224,7 +224,7 @@ public class WorldController implements Initializable {
             double characterScreenX = characterBoundsInScreen.getMaxX();
             double characterScreenXbefore = characterBoundsInScreen.getMinX();
 
-// Get the bounds of the myrectangle in the screen
+
 
             System.out.println("Character X in Screen: " + characterScreenXbefore);
             System.out.println("Character X in Screen: " + characterScreenX);
@@ -260,11 +260,23 @@ public class WorldController implements Initializable {
     private DataBase readObject() throws ClassNotFoundException {
         System.out.println("Inside here");
         DataBase temp;
-        ObjectInputStream out = null;
+        ObjectInputStream in = null;
         try {
             System.out.println("try block entered");
-            out = new ObjectInputStream(Files.newInputStream(Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt")));
-            temp = (DataBase) out.readObject();
+            Path path = Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Java(OOPS)\\Project\\2022170_2022375_Project\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt");
+
+
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+                temp = new DataBase();
+                try (ObjectOutputStream out = new ObjectOutputStream(Files.newOutputStream(path))) {
+                    out.writeObject(temp);
+                }
+            } else {
+                in = new ObjectInputStream(Files.newInputStream(path));
+                temp = (DataBase) in.readObject();
+            }
+
             String hiScore = String.valueOf(temp.highestScore);
             String nCherries = String.valueOf(temp.numCherries);
             cherrytracker.setText(nCherries);
@@ -275,10 +287,13 @@ public class WorldController implements Initializable {
             String nCherries = String.valueOf(temp.numCherries);
             cherrytracker.setText(nCherries);
             System.out.println(hiScore + '\n' + nCherries);
-
         } finally {
-            if (out != null) {
-                out = null;
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         System.out.println("Read saved score: " + temp.savedScore);
@@ -329,7 +344,7 @@ public class WorldController implements Initializable {
                     new KeyFrame(Duration.seconds(0.8), new KeyValue(rotate.angleProperty(), 90))
             );
 
-            rotationTimeline.setCycleCount(1); // Play the timeline once
+            rotationTimeline.setCycleCount(1);
             rotationTimeline.play();
         }
     }
@@ -464,7 +479,6 @@ public class WorldController implements Initializable {
 
         }
 
-        // Check if the character reaches the end of the stick
         double stickEndX = characterstartingposition+ newRectangle.getHeight();
         System.out.println("End of Stick:"+stickEndX);
         rectangleBoundsInScreen = nextPillar.localToScreen(nextPillar.getBoundsInLocal());
@@ -478,7 +492,7 @@ public class WorldController implements Initializable {
             System.out.println("1st End of Rectangle:"+rectX1);
             System.out.println("2nd End of Rectangle:"+rectX2);
             if (stickEndX < rectX1 || stickEndX > rectX2) {
-               executeAction();
+                executeAction();
 
             }
             else{
@@ -494,12 +508,12 @@ public class WorldController implements Initializable {
 
                     character.getCurrentImageView().setImage(originalImage);
                     timeline.stop();
-                    // Make the stick and the starting pillar disappear
-                    newRectangle.setHeight(1.5); // Set the height back to its initial value
-                    newRectangle.setWidth(5.8); // Set the width back to its initial value
-                    newRectangle.setX(147); // Set the X position back to its initial value
-                    newRectangle.setY(527.5); // Set the Y position back to its initial value
-                    newRectangle.getTransforms().clear(); // Clear the transforms
+
+                    newRectangle.setHeight(1.5);
+                    newRectangle.setWidth(5.8);
+                    newRectangle.setX(147);
+                    newRectangle.setY(527.5);
+                    newRectangle.getTransforms().clear();
                     currentPillar.setVisible(false);
                     if (((Pane) root).getChildren().contains(cherry.getCurrentCherry())) {
                         ((Pane) root).getChildren().remove(cherry.getCurrentCherry());
@@ -508,7 +522,7 @@ public class WorldController implements Initializable {
                     int currentScore = Integer.parseInt(scoreString);
                     String newScore= String.valueOf(currentScore+1);
                     scoretracker.setText(newScore);
-                    CharacterAnimationTransition(); // Call the transition method here
+                    CharacterAnimationTransition();
                 }
             }
         }
@@ -575,7 +589,7 @@ public class WorldController implements Initializable {
 //            }
 //        }
 //
-//        // Check if the character reaches the end of the stick
+//
 //        double stickEndX = characterstartingposition + newRectangle.getHeight();
 //        System.out.println("End of Stick:" + stickEndX);
 //        rectangleBoundsInScreen = nextPillar.localToScreen(nextPillar.getBoundsInLocal());
@@ -607,13 +621,13 @@ public class WorldController implements Initializable {
 //
 //                    character.getCurrentImageView().setImage(originalImage);
 //                    timeline.stop();
-//                    // Make the stick and the starting pillar disappear
-//                    newRectangle.setHeight(1.5); // Set the height back to its initial
-//                    newRectangle.setHeight(1.5); // Set the height back to its initial value
-//                    newRectangle.setWidth(5.8); // Set the width back to its initial value
-//                    newRectangle.setX(147); // Set the X position back to its initial value
-//                    newRectangle.setY(527.5); // Set the Y position back to its initial value
-//                    newRectangle.getTransforms().clear(); // Clear the transforms
+//
+//                    newRectangle.setHeight(1.5);
+//                    newRectangle.setHeight(1.5);
+//                    newRectangle.setWidth(5.8);
+//                    newRectangle.setX(147);
+//                    newRectangle.setY(527.5);
+//                    newRectangle.getTransforms().clear();
 //                    currentPillar.setVisible(false);
 //                    if (((Pane) root).getChildren().contains(cherry.getCurrentCherry())) {
 //                        ((Pane) root).getChildren().remove(cherry.getCurrentCherry());
@@ -622,7 +636,7 @@ public class WorldController implements Initializable {
 //                    int currentScore = Integer.parseInt(scoreString);
 //                    String newScore = String.valueOf(currentScore + 1);
 //                    scoretracker.setText(newScore);
-//                    CharacterAnimationTransition(); // Call the transition method here
+//                    CharacterAnimationTransition();
 //                }
 //            }
 //        }
@@ -640,12 +654,18 @@ public class WorldController implements Initializable {
         loadedData.savedScore = 0;
         ObjectOutputStream out = null;
         try {
-            out = new ObjectOutputStream(Files.newOutputStream(Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt")));
+            Path path = Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Java(OOPS)\\Project\\2022170_2022375_Project\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt");
+
+
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+
+            out = new ObjectOutputStream(Files.newOutputStream(path));
             out.writeObject(loadedData);
-        }
-        finally {
+        } finally {
             if (out != null) {
-                out = null;
+                out.close();
             }
         }
         RunningPlayer.stop();
@@ -661,26 +681,26 @@ public class WorldController implements Initializable {
         currentPillar = nextPillar;
         nextPillar = temp;
 
-        // Calculate the distance to move the screen
+
         characterdistance = (character.getCurrentImageView().getX() - absolutecharacterstartingposition);
         double pillardistance = (character.getCurrentImageView().getX()-absolutecharacterstartingposition)-20;
 
-        // Start the screen shift transition for the pillar
+
         TranslateTransition shiftTransitionPillar = new TranslateTransition();
-        shiftTransitionPillar.setNode(currentPillar);  // currentPillar is the pillar on which the character is standing
-        shiftTransitionPillar.setDuration(Duration.seconds(1));  // Set the duration of the transition
-        shiftTransitionPillar.setByX(-pillardistance);  // Move the pillar by the calculated distance
+        shiftTransitionPillar.setNode(currentPillar);
+        shiftTransitionPillar.setDuration(Duration.seconds(1));
+        shiftTransitionPillar.setByX(-pillardistance);
 
-        // Start the screen shift transition for the character
+
         TranslateTransition shiftTransitionCharacter = new TranslateTransition();
-        shiftTransitionCharacter.setNode(character.getCurrentImageView());  // characterImageView is the character
-        shiftTransitionCharacter.setDuration(Duration.seconds(1));  // Set the duration of the transition
-        shiftTransitionCharacter.setByX(-characterdistance);  // Move the character by the calculated distance
+        shiftTransitionCharacter.setNode(character.getCurrentImageView());
+        shiftTransitionCharacter.setDuration(Duration.seconds(1));
+        shiftTransitionCharacter.setByX(-characterdistance);
 
-        // Create a parallel transition to play the two transitions simultaneously
+
         ParallelTransition parallelTransition = new ParallelTransition(shiftTransitionPillar, shiftTransitionCharacter);
 
-        // Set an action to perform when the shift transition is finished
+
         parallelTransition.setOnFinished(e2 -> {
             absolutecharacterstartingposition+=(int)characterdistance;
             characterstartingposition=absolutecharacterstartingposition+25;
@@ -711,11 +731,11 @@ public class WorldController implements Initializable {
 
 
 
-            // Start the game again
+
             startGrowingRectangle();
         });
 
-        // Start the shift transition
+
         parallelTransition.play();
     }
 
@@ -759,7 +779,7 @@ public class WorldController implements Initializable {
                 normal = (Label) endingSceneRoot.lookup("#normal");
                 ObjectOutputStream out = null;
                 try {
-                    out = new ObjectOutputStream(Files.newOutputStream(Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt")));
+                    out = new ObjectOutputStream(Files.newOutputStream(Paths.get("C:\\Users\\praty\\OneDrive\\Desktop\\Java(OOPS)\\Project\\2022170_2022375_Project\\Stickfunctioningfile\\AP_2022170_2022375\\AP_2022170_2022375\\stickhero\\src\\main\\java\\com\\example\\stickhero\\database.txt")));
                     if (Integer.parseInt(scoretracker.getText()) > loadedData.highestScore) {
                         loadedData.highestScore = Integer.parseInt(scoretracker.getText());
                     }
